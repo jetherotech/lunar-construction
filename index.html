@@ -3,1082 +3,563 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lunar Construction & Property Maintenance</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Lunar Construction & Facilities</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold: #c9a96e;
-    --gold-light: #e8d5b0;
-    --gold-dark: #8a6f3e;
-    --black: #0a0a0a;
-    --dark: #111111;
-    --dark2: #1a1a1a;
-    --dark3: #222222;
-    --white: #f5f2ed;
-    --gray: #888880;
-    --light-gray: #cccccc;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'Barlow', sans-serif;
-    font-weight: 300;
-    overflow-x: hidden;
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#080808;
+  --surface:#111111;
+  --surface2:#1a1a1a;
+  --gold:#C9A84C;
+  --gold-light:#E2C87A;
+  --gold-dim:#8a6e2f;
+  --white:#f5f0e8;
+  --muted:#888880;
+  --stroke:#2a2a2a;
+  --font-display:'Cormorant Garamond',serif;
+  --font-body:'Barlow',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--font-body);font-weight:300;overflow-x:hidden}
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.2rem 4rem;
-    background: rgba(10,10,10,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(201,169,110,0.15);
-    transition: all 0.3s;
-  }
-  .nav-logo {
-    display: flex; align-items: center; gap: 1rem;
-  }
-  .nav-logo img { height: 48px; }
-  .nav-links { display: flex; gap: 2.5rem; align-items: center; }
-  .nav-links a {
-    color: var(--light-gray);
-    text-decoration: none;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    transition: color 0.3s;
-  }
-  .nav-links a:hover { color: var(--gold); }
-  .nav-cta {
-    background: transparent;
-    border: 1px solid var(--gold);
-    color: var(--gold) !important;
-    padding: 0.5rem 1.5rem;
-    transition: all 0.3s !important;
-  }
-  .nav-cta:hover { background: var(--gold) !important; color: var(--black) !important; }
+/* LOADING SCREEN */
+#loader{position:fixed;inset:0;z-index:9999;background:var(--black);display:flex;flex-direction:column;justify-content:space-between;padding:2rem;transition:opacity 0.6s ease, visibility 0.6s ease}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-top{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);opacity:0;animation:fadeUp .8s ease forwards .2s}
+.loader-center{text-align:center;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.loader-word{font-family:var(--font-display);font-style:italic;font-size:clamp(3rem,8vw,6rem);color:rgba(245,240,232,.8);opacity:0;transform:translateY(20px);transition:opacity .4s ease,transform .4s ease;position:absolute;white-space:nowrap;left:50%;transform:translateX(-50%) translateY(20px)}
+.loader-word.active{opacity:1;transform:translateX(-50%) translateY(0)}
+.loader-word.exit{opacity:0;transform:translateX(-50%) translateY(-20px)}
+.loader-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+.loader-counter{font-family:var(--font-display);font-size:clamp(4rem,12vw,9rem);line-height:1;color:var(--white);font-variant-numeric:tabular-nums}
+.loader-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(42,42,42,.5)}
+.loader-bar{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-light));width:0%;transition:width .05s linear;box-shadow:0 0 8px rgba(201,168,76,.4)}
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-bg {
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, #0a0a0a 0%, #111111 40%, #1a150a 100%);
-  }
-  .hero-grid {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(201,169,110,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(201,169,110,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-  .hero-accent {
-    position: absolute;
-    right: 0; top: 0; bottom: 0;
-    width: 55%;
-    background: linear-gradient(to left, rgba(201,169,110,0.06), transparent);
-    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
-  }
-  .hero-content {
-    position: relative; z-index: 2;
-    padding: 0 4rem;
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
-  }
-  .hero-eyebrow {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1.5rem;
-    display: flex; align-items: center; gap: 1rem;
-  }
-  .hero-eyebrow::before {
-    content: '';
-    width: 40px; height: 1px;
-    background: var(--gold);
-  }
-  .hero h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(3rem, 6vw, 6rem);
-    font-weight: 300;
-    line-height: 1.05;
-    max-width: 700px;
-    margin-bottom: 2rem;
-  }
-  .hero h1 em {
-    font-style: normal;
-    color: var(--gold);
-  }
-  .hero-desc {
-    font-size: 1rem;
-    line-height: 1.8;
-    color: var(--gray);
-    max-width: 500px;
-    margin-bottom: 3rem;
-    font-weight: 300;
-  }
-  .hero-actions { display: flex; gap: 1.5rem; align-items: center; }
-  .btn-primary {
-    background: var(--gold);
-    color: var(--black);
-    padding: 0.9rem 2.5rem;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s;
-    display: inline-block;
-  }
-  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
-  .btn-ghost {
-    color: var(--white);
-    padding: 0.9rem 0;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    text-decoration: none;
-    display: flex; align-items: center; gap: 0.75rem;
-    transition: all 0.3s;
-    border-bottom: 1px solid rgba(245,242,237,0.2);
-  }
-  .btn-ghost:hover { color: var(--gold); border-color: var(--gold); }
-  .btn-ghost svg { transition: transform 0.3s; }
-  .btn-ghost:hover svg { transform: translateX(4px); }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:center;padding:1.5rem 1rem}
+.nav-pill{display:inline-flex;align-items:center;gap:0;background:rgba(17,17,17,.85);backdrop-filter:blur(12px);border:1px solid rgba(201,168,76,.15);border-radius:9999px;padding:.5rem .5rem;transition:box-shadow .3s}
+.nav-pill.scrolled{box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.nav-logo{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--black);border:1.5px solid var(--gold);margin-right:.5rem;font-family:var(--font-display);font-style:italic;font-size:13px;color:var(--gold);flex-shrink:0;transition:transform .2s,border-color .2s}
+.nav-logo:hover{transform:scale(1.1);border-color:var(--gold-light)}
+.nav-div{width:1px;height:20px;background:var(--stroke);margin:0 .25rem}
+.nav-link{font-size:13px;color:var(--muted);padding:.4rem .9rem;border-radius:9999px;text-decoration:none;white-space:nowrap;transition:color .2s,background .2s}
+.nav-link:hover,.nav-link.active{color:var(--white);background:rgba(201,168,76,.1)}
+.nav-cta{font-size:13px;color:var(--gold);padding:.4rem 1rem;border-radius:9999px;border:1px solid rgba(201,168,76,.3);text-decoration:none;transition:all .2s;margin-left:.25rem}
+.nav-cta:hover{background:rgba(201,168,76,.1);border-color:var(--gold)}
 
-  .hero-stats {
-    position: absolute;
-    bottom: 3rem; right: 4rem;
-    display: flex; gap: 3rem;
-    z-index: 2;
-  }
-  .hero-stat { text-align: right; }
-  .hero-stat-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2.5rem;
-    font-weight: 300;
-    color: var(--gold);
-    line-height: 1;
-  }
-  .hero-stat-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gray);
-    margin-top: 0.3rem;
-  }
+/* HERO */
+#hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1800&q=80') center/cover no-repeat;filter:brightness(.4)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,8,8,.3) 0%,rgba(8,8,8,.1) 50%,rgba(8,8,8,.9) 100%)}
+.hero-content{position:relative;z-index:2;text-align:center;padding:2rem 1.5rem;max-width:900px}
+.hero-eyebrow{font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;opacity:0;animation:fadeUp 1s ease forwards .2s}
+.hero-title{font-family:var(--font-display);font-size:clamp(3.5rem,9vw,8rem);font-weight:300;line-height:.9;letter-spacing:-.02em;color:var(--white);margin-bottom:1.5rem;opacity:0;animation:fadeUp 1.2s ease forwards .1s}
+.hero-title em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-size:clamp(.9rem,2vw,1.1rem);color:rgba(245,240,232,.6);max-width:480px;margin:0 auto 2.5rem;line-height:1.7;opacity:0;animation:fadeUp 1s ease forwards .4s}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp 1s ease forwards .55s}
+.btn-gold{background:var(--gold);color:var(--black);font-family:var(--font-body);font-size:13px;font-weight:500;letter-spacing:.08em;padding:.9rem 2rem;border-radius:9999px;border:none;cursor:pointer;text-decoration:none;transition:all .25s;display:inline-block}
+.btn-gold:hover{background:var(--gold-light);transform:scale(1.04)}
+.btn-outline{background:transparent;color:var(--white);font-family:var(--font-body);font-size:13px;font-weight:400;letter-spacing:.06em;padding:.9rem 2rem;border-radius:9999px;border:1px solid rgba(245,240,232,.25);cursor:pointer;text-decoration:none;transition:all .25s;display:inline-block}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);transform:scale(1.04)}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.6rem;z-index:2;opacity:0;animation:fadeUp 1s ease forwards .8s}
+.scroll-hint span{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.scroll-line{width:1px;height:40px;background:var(--stroke);position:relative;overflow:hidden}
+.scroll-line::after{content:'';position:absolute;top:-100%;left:0;right:0;height:100%;background:var(--gold);animation:scrollDown 1.5s ease-in-out infinite}
 
-  /* SECTION STYLES */
-  section { padding: 6rem 4rem; max-width: 1400px; margin: 0 auto; }
-  .section-full { max-width: none; padding: 6rem 0; }
-  .section-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 1rem;
-  }
-  .section-label::after {
-    content: '';
-    height: 1px;
-    width: 40px;
-    background: var(--gold);
-  }
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 4vw, 3.5rem);
-    font-weight: 300;
-    line-height: 1.15;
-    margin-bottom: 1.5rem;
-  }
-  .section-title em { font-style: italic; color: var(--gold); }
+/* SECTIONS COMMON */
+section{padding:6rem 1.5rem}
+.container{max-width:1200px;margin:0 auto;padding:0 1rem}
+.section-eye{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.section-eye-line{width:2rem;height:1px;background:var(--gold-dim)}
+.section-eye-text{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.section-heading{font-family:var(--font-display);font-size:clamp(2.5rem,5vw,4rem);font-weight:300;line-height:1.05;color:var(--white);margin-bottom:1.2rem}
+.section-heading em{font-style:italic;color:var(--gold-light)}
+.section-sub{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:520px}
 
-  /* DIVIDER */
-  .divider {
-    border: none;
-    border-top: 1px solid rgba(201,169,110,0.15);
-    margin: 0;
-  }
+/* WHO WE ARE */
+#about{background:var(--surface)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.about-img{border-radius:4px;overflow:hidden;position:relative}
+.about-img img{width:100%;height:420px;object-fit:cover;display:block;transition:transform .6s ease}
+.about-img:hover img{transform:scale(1.03)}
+.about-img-accent{position:absolute;bottom:1.5rem;left:1.5rem;background:rgba(8,8,8,.85);backdrop-filter:blur(8px);border:1px solid rgba(201,168,76,.3);border-radius:4px;padding:.75rem 1.25rem}
+.about-img-accent p{font-size:12px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase}
 
-  /* SERVICES */
-  .services-intro {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6rem;
-    align-items: start;
-    margin-bottom: 5rem;
-  }
-  .services-desc {
-    color: var(--gray);
-    line-height: 1.9;
-    font-size: 1rem;
-    padding-top: 1rem;
-  }
-  .services-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: rgba(201,169,110,0.1);
-  }
-  .service-card {
-    background: var(--dark);
-    padding: 2.5rem 2rem;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s;
-    cursor: default;
-  }
-  .service-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--gold);
-    transform: scaleX(0);
-    transition: transform 0.4s;
-  }
-  .service-card:hover { background: var(--dark2); }
-  .service-card:hover::before { transform: scaleX(1); }
-  .service-icon {
-    width: 48px; height: 48px;
-    margin-bottom: 1.5rem;
-    color: var(--gold);
-  }
-  .service-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 4rem;
-    font-weight: 300;
-    color: rgba(201,169,110,0.08);
-    position: absolute;
-    top: 1rem; right: 1.5rem;
-    line-height: 1;
-    pointer-events: none;
-  }
-  .service-card h3 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-    color: var(--white);
-  }
-  .service-card p {
-    font-size: 0.9rem;
-    color: var(--gray);
-    line-height: 1.7;
-  }
+/* SERVICES */
+#services{background:var(--black)}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-top:3rem}
+.service-card{background:var(--surface);border:1px solid var(--stroke);border-radius:4px;padding:2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+.service-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold-dim),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+.service-card:hover{border-color:rgba(201,168,76,.3);transform:translateY(-4px)}
+.service-card:hover::before{transform:scaleX(1)}
+.service-icon{width:44px;height:44px;border:1px solid rgba(201,168,76,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;font-size:18px}
+.service-card h3{font-family:var(--font-display);font-size:1.4rem;font-weight:400;color:var(--white);margin-bottom:.75rem}
+.service-card p{font-size:.875rem;color:var(--muted);line-height:1.7}
 
-  /* ABOUT */
-  .about-wrap {
-    background: var(--dark);
-    border-top: 1px solid rgba(201,169,110,0.12);
-    border-bottom: 1px solid rgba(201,169,110,0.12);
-  }
-  .about-inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-  .about-visual {
-    position: relative;
-    min-height: 500px;
-    background: var(--dark2);
-    overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .about-pattern {
-    position: absolute; inset: 0;
-    background-image: repeating-linear-gradient(
-      45deg,
-      rgba(201,169,110,0.03) 0px,
-      rgba(201,169,110,0.03) 1px,
-      transparent 1px,
-      transparent 40px
-    );
-  }
-  .about-logo-display {
-    position: relative; z-index: 2;
-    padding: 3rem;
-  }
-  .about-logo-display img {
-    width: 100%;
-    max-width: 360px;
-    filter: drop-shadow(0 0 40px rgba(201,169,110,0.15));
-  }
-  .about-content {
-    padding: 5rem 4rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  .about-content p {
-    color: var(--gray);
-    line-height: 1.9;
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .about-pillars {
-    margin-top: 2rem;
-    display: flex; flex-direction: column; gap: 1rem;
-  }
-  .pillar {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 1rem 1.25rem;
-    border: 1px solid rgba(201,169,110,0.12);
-    border-left: 2px solid var(--gold);
-    transition: all 0.3s;
-  }
-  .pillar:hover { background: rgba(201,169,110,0.04); }
-  .pillar-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.9rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-weight: 500;
-  }
-  .pillar-desc { font-size: 0.82rem; color: var(--gray); margin-top: 0.2rem; }
+/* STATS */
+#stats{background:var(--surface);border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;text-align:center}
+.stat-item{padding:3rem 1.5rem;border-right:1px solid var(--stroke)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:var(--font-display);font-size:clamp(2.5rem,5vw,4rem);font-weight:300;color:var(--gold);line-height:1;margin-bottom:.5rem}
+.stat-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 
-  /* WHY US */
-  .why-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-    margin-top: 4rem;
-  }
-  .why-card {
-    padding: 2rem 1.5rem;
-    border: 1px solid rgba(201,169,110,0.12);
-    position: relative;
-    transition: all 0.35s;
-  }
-  .why-card:hover {
-    border-color: rgba(201,169,110,0.35);
-    background: rgba(201,169,110,0.03);
-    transform: translateY(-4px);
-  }
-  .why-card-icon {
-    width: 42px; height: 42px;
-    color: var(--gold);
-    margin-bottom: 1.25rem;
-  }
-  .why-card h3 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-weight: 500;
-    margin-bottom: 0.75rem;
-  }
-  .why-card p { font-size: 0.88rem; color: var(--gray); line-height: 1.7; }
+/* PROJECTS */
+#projects{background:var(--black)}
+.projects-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1.2rem;margin-top:3rem}
+.project-card{border-radius:4px;overflow:hidden;position:relative;cursor:pointer;background:var(--surface)}
+.project-card:nth-child(1){grid-column:span 7}
+.project-card:nth-child(2){grid-column:span 5}
+.project-card:nth-child(3){grid-column:span 5}
+.project-card:nth-child(4){grid-column:span 7}
+.project-card img{width:100%;height:320px;object-fit:cover;display:block;transition:transform .6s ease}
+.project-card:hover img{transform:scale(1.06)}
+.project-overlay{position:absolute;inset:0;background:rgba(8,8,8,.7);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:1.5rem;backdrop-filter:blur(4px)}
+.project-card:hover .project-overlay{opacity:1}
+.project-label{background:var(--black);border:1px solid rgba(201,168,76,.4);border-radius:9999px;padding:.5rem 1.25rem;font-size:12px;color:var(--gold);letter-spacing:.1em}
+.project-info{position:absolute;bottom:1rem;left:1rem;right:1rem}
+.project-cat{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:.3rem}
+.project-title{font-family:var(--font-display);font-size:1.3rem;color:var(--white)}
 
-  /* PROJECTS */
-  .projects-section {
-    background: var(--dark);
-    border-top: 1px solid rgba(201,169,110,0.12);
-  }
-  .projects-header {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    padding: 5rem 4rem 3rem;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: rgba(201,169,110,0.1);
-    padding: 0 4rem 5rem;
-    max-width: 1400px;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
-  .project-card {
-    background: var(--dark2);
-    padding: 2.5rem 2rem;
-    position: relative;
-    overflow: hidden;
-    min-height: 240px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    transition: all 0.4s;
-    cursor: pointer;
-  }
-  .project-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(10,10,10,0.85), transparent 60%);
-    pointer-events: none;
-  }
-  .project-card:hover { background: var(--dark3); }
-  .project-bg {
-    position: absolute; inset: 0;
-    background: var(--dark3);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .project-bg svg {
-    width: 80px; height: 80px;
-    color: rgba(201,169,110,0.08);
-  }
-  .project-info { position: relative; z-index: 2; }
-  .project-type {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 0.5rem;
-    font-family: 'Barlow Condensed', sans-serif;
-  }
-  .project-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem;
-    font-weight: 400;
-    margin-bottom: 0.5rem;
-  }
-  .project-detail { font-size: 0.82rem; color: var(--gray); }
+/* CAREERS */
+#careers{background:var(--surface)}
+.jobs-list{margin-top:3rem;display:flex;flex-direction:column;gap:1rem}
+.job-card{background:var(--surface2);border:1px solid var(--stroke);border-radius:4px;padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;transition:border-color .3s}
+.job-card:hover{border-color:rgba(201,168,76,.35)}
+.job-title{font-family:var(--font-display);font-size:1.25rem;font-weight:400;color:var(--white);margin-bottom:.3rem}
+.job-meta{font-size:12px;color:var(--muted);display:flex;gap:1rem}
+.job-tag{background:rgba(201,168,76,.1);color:var(--gold);font-size:11px;letter-spacing:.1em;padding:.25rem .75rem;border-radius:9999px;border:1px solid rgba(201,168,76,.2)}
 
-  /* TESTIMONIALS */
-  .testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-top: 4rem;
-  }
-  .testimonial {
-    padding: 2rem;
-    border: 1px solid rgba(201,169,110,0.12);
-    position: relative;
-  }
-  .testimonial::before {
-    content: '"';
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 4rem;
-    color: var(--gold);
-    opacity: 0.3;
-    position: absolute;
-    top: 0.5rem; left: 1.5rem;
-    line-height: 1;
-  }
-  .testimonial p {
-    font-size: 0.92rem;
-    color: var(--light-gray);
-    line-height: 1.8;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  .testimonial-author {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
-  .stars { color: var(--gold); font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 0.25rem; }
+/* SUBCONTRACTORS */
+#subcontractors{background:var(--black)}
+.trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2rem;margin:3rem 0}
+.trust-card{text-align:center;padding:2rem}
+.trust-icon{width:52px;height:52px;border:1px solid rgba(201,168,76,.3);border-radius:50%;margin:0 auto 1.25rem;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--gold)}
+.trust-card h4{font-family:var(--font-display);font-size:1.2rem;font-weight:400;color:var(--white);margin-bottom:.5rem}
+.trust-card p{font-size:.875rem;color:var(--muted);line-height:1.6}
 
-  /* CONTACT */
-  .contact-wrap {
-    background: var(--dark);
-    border-top: 1px solid rgba(201,169,110,0.12);
-  }
-  .contact-inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-  .contact-info {
-    padding: 5rem 4rem;
-    border-right: 1px solid rgba(201,169,110,0.12);
-  }
-  .contact-details { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
-  .contact-item { display: flex; gap: 1rem; align-items: flex-start; }
-  .contact-icon {
-    width: 18px; height: 18px;
-    color: var(--gold);
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .contact-item-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 0.3rem;
-  }
-  .contact-item-value { font-size: 0.95rem; color: var(--light-gray); line-height: 1.6; }
-  .contact-form { padding: 5rem 4rem; }
-  .form-group { margin-bottom: 1.5rem; }
-  .form-group label {
-    display: block;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gray);
-    margin-bottom: 0.5rem;
-  }
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    width: 100%;
-    background: transparent;
-    border: 1px solid rgba(201,169,110,0.2);
-    color: var(--white);
-    padding: 0.8rem 1rem;
-    font-family: 'Barlow', sans-serif;
-    font-size: 0.9rem;
-    outline: none;
-    transition: border-color 0.3s;
-    resize: none;
-    appearance: none;
-    -webkit-appearance: none;
-  }
-  .form-group input:focus,
-  .form-group textarea:focus,
-  .form-group select:focus { border-color: var(--gold); }
-  .form-group select { background: var(--dark); cursor: pointer; }
-  .form-group select option { background: var(--dark); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .submit-btn {
-    background: var(--gold);
-    color: var(--black);
-    border: none;
-    padding: 1rem 2.5rem;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex; align-items: center; gap: 0.75rem;
-  }
-  .submit-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+/* FORMS */
+.form-section{background:var(--surface2);border:1px solid var(--stroke);border-radius:4px;padding:2.5rem;margin-top:3rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.form-field{display:flex;flex-direction:column;gap:.5rem}
+.form-field.full{grid-column:1/-1}
+.form-field label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.form-field input,.form-field select,.form-field textarea{background:var(--surface);border:1px solid var(--stroke);border-radius:2px;padding:.75rem 1rem;color:var(--white);font-family:var(--font-body);font-size:.875rem;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:rgba(201,168,76,.5)}
+.form-field textarea{resize:vertical;min-height:120px}
+.form-field select option{background:var(--surface2);color:var(--white)}
+.file-upload{border:1px dashed rgba(201,168,76,.3);border-radius:2px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color .2s}
+.file-upload:hover{border-color:var(--gold)}
+.file-upload p{font-size:.875rem;color:var(--muted)}
+.file-upload span{color:var(--gold)}
 
-  /* FOOTER */
-  footer {
-    background: var(--black);
-    border-top: 1px solid rgba(201,169,110,0.15);
-    padding: 3rem 4rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 2rem;
-    max-width: none;
-  }
-  .footer-logo img { height: 40px; opacity: 0.8; }
-  .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
-  .footer-links a {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.78rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gray);
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-  .footer-links a:hover { color: var(--gold); }
-  .footer-copy {
-    font-size: 0.78rem;
-    color: var(--gray);
-    letter-spacing: 0.05em;
-  }
+/* CONTACT */
+#contact{background:var(--surface)}
+.contact-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:4rem;align-items:start}
+.contact-info h3{font-family:var(--font-display);font-size:1.8rem;font-weight:300;margin-bottom:2rem;color:var(--white)}
+.contact-detail{display:flex;gap:1rem;margin-bottom:1.5rem;align-items:flex-start}
+.contact-detail-icon{width:36px;height:36px;border:1px solid rgba(201,168,76,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gold);flex-shrink:0}
+.contact-detail p{font-size:.875rem;color:var(--muted);line-height:1.6}
+.contact-detail strong{color:var(--white);font-weight:400;display:block;margin-bottom:.2rem}
 
-  /* ANIMATIONS */
-  .fade-in {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-  }
-  .fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* FOOTER */
+footer{background:var(--black);border-top:1px solid var(--stroke);padding:3rem 1.5rem}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:2rem}
+.footer-logo{font-family:var(--font-display);font-style:italic;font-size:1.2rem;color:var(--gold)}
+.footer-links{display:flex;gap:2rem;flex-wrap:wrap}
+.footer-links a{font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.08em;transition:color .2s}
+.footer-links a:hover{color:var(--gold)}
+.footer-copy{font-size:11px;color:rgba(136,136,128,.5);letter-spacing:.1em}
 
-  /* Scroll progress */
-  .progress-bar {
-    position: fixed; top: 0; left: 0;
-    height: 2px;
-    background: var(--gold);
-    z-index: 9999;
-    width: 0%;
-    transition: width 0.1s;
-  }
+/* MARQUEE */
+.marquee-wrap{overflow:hidden;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke);padding:1.2rem 0;margin:2rem 0}
+.marquee-track{display:flex;gap:3rem;white-space:nowrap;animation:marquee 30s linear infinite}
+.marquee-track span{font-family:var(--font-display);font-style:italic;font-size:1.2rem;color:var(--gold-dim);letter-spacing:.05em;flex-shrink:0}
 
-  @media (max-width: 768px) {
-    nav { padding: 1rem 1.5rem; }
-    .nav-links { display: none; }
-    section { padding: 4rem 1.5rem; }
-    .hero-content { padding: 0 1.5rem; }
-    .hero h1 { font-size: 2.5rem; }
-    .hero-stats { right: 1.5rem; gap: 1.5rem; }
-    .services-intro { grid-template-columns: 1fr; gap: 2rem; }
-    .services-grid { grid-template-columns: 1fr; }
-    .about-inner { grid-template-columns: 1fr; }
-    .why-grid { grid-template-columns: repeat(2, 1fr); }
-    .projects-grid { grid-template-columns: 1fr; padding: 0 1.5rem 3rem; }
-    .projects-header { padding: 3rem 1.5rem 2rem; flex-direction: column; align-items: flex-start; }
-    .testimonials-grid { grid-template-columns: 1fr; }
-    .contact-inner { grid-template-columns: 1fr; }
-    .contact-info { padding: 3rem 1.5rem; border-right: none; border-bottom: 1px solid rgba(201,169,110,0.12); }
-    .contact-form { padding: 3rem 1.5rem; }
-    footer { flex-direction: column; align-items: flex-start; padding: 2rem 1.5rem; }
-    .form-row { grid-template-columns: 1fr; }
-  }
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scrollDown{0%{top:-100%}100%{top:200%}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* MOBILE */
+@media(max-width:768px){
+  .about-grid,.contact-grid{grid-template-columns:1fr}
+  .about-img{order:-1}
+  .projects-grid{display:flex;flex-direction:column}
+  .project-card img{height:240px}
+  .form-grid{grid-template-columns:1fr}
+  .stat-item{border-right:none;border-bottom:1px solid var(--stroke)}
+  .stat-item:last-child{border-bottom:none}
+  .nav-div,.nav-link:not(.nav-cta){display:none}
+  .job-card{flex-direction:column;align-items:flex-start}
+  .footer-inner{flex-direction:column;text-align:center}
+}
 </style>
 </head>
 <body>
 
-<div class="progress-bar" id="progressBar"></div>
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <div class="loader-top">Lunar Construction & Facilities</div>
+  <div class="loader-center">
+    <div class="loader-word active" id="w0">Build</div>
+    <div class="loader-word" id="w1">Manage</div>
+    <div class="loader-word" id="w2">Excellence</div>
+  </div>
+  <div class="loader-bottom">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)">Loading</div>
+    <div class="loader-counter" id="counter">000</div>
+  </div>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="loaderBar"></div></div>
+</div>
 
 <!-- NAV -->
 <nav id="navbar">
-  <div class="nav-logo">
-    <img src="lunar-logo-transparent.png" alt="Lunar Construction" style="height:52px">
-    <span style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;color:var(--gold);display:none">LUNAR</span>
-  </div>
-  <div class="nav-links">
-    <a href="#about">About</a>
-    <a href="#services">Services</a>
-    <a href="#projects">Projects</a>
-    <a href="#why-us">Why Us</a>
-    <a href="#contact" class="nav-cta">Contact Us</a>
+  <div class="nav-pill" id="navPill">
+    <div class="nav-logo">LC</div>
+    <div class="nav-div"></div>
+    <a href="#hero" class="nav-link active">Home</a>
+    <a href="#services" class="nav-link">Services</a>
+    <a href="#projects" class="nav-link">Projects</a>
+    <a href="#careers" class="nav-link">Careers</a>
+    <a href="#subcontractors" class="nav-link">Subcontractors</a>
+    <div class="nav-div"></div>
+    <a href="#contact" class="nav-cta">Contact ↗</a>
   </div>
 </nav>
 
 <!-- HERO -->
-<div class="hero">
+<section id="hero">
   <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-accent"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-eyebrow">Lunar Construction & Property Maintenance</div>
-    <h1>Building <em>Excellence,</em><br>Maintaining <em>Standards</em></h1>
-    <p class="hero-desc">From ground-up construction to comprehensive property maintenance, Lunar delivers craftsmanship that stands the test of time. Your vision, our expertise.</p>
-    <div class="hero-actions">
-      <a href="#contact" class="btn-primary">Request a Quote</a>
-      <a href="#services" class="btn-ghost">
-        Our Services
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </a>
+    <p class="hero-eyebrow">Lunar Construction & Facilities — Est. 2010</p>
+    <h1 class="hero-title">Building Homes.<br><em>Elevating Standards.</em></h1>
+    <p class="hero-sub">Precision residential construction and facilities management — delivering quality from foundation to finish.</p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn-gold">Explore Our Work</a>
+      <a href="#contact" class="btn-outline">Get in Touch</a>
     </div>
   </div>
-  <div class="hero-stats">
-    <div class="hero-stat">
-      <div class="hero-stat-num">500+</div>
-      <div class="hero-stat-label">Projects Completed</div>
-    </div>
-    <div class="hero-stat">
-      <div class="hero-stat-num">15+</div>
-      <div class="hero-stat-label">Years Experience</div>
-    </div>
-    <div class="hero-stat">
-      <div class="hero-stat-num">100%</div>
-      <div class="hero-stat-label">Client Satisfaction</div>
-    </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
   </div>
-</div>
+</section>
 
-<hr class="divider">
-
-<!-- SERVICES -->
-<section id="services">
-  <div class="services-intro">
-    <div>
-      <div class="section-label">What We Do</div>
-      <h2 class="section-title">Full-Spectrum<br>Construction &<br><em>Property Care</em></h2>
-    </div>
-    <div>
-      <p class="services-desc">Lunar Construction & Property Maintenance offers a complete suite of services for residential and commercial clients. Whether you're building from scratch, renovating, or keeping your property in peak condition — we handle it with precision.</p>
-      <p class="services-desc" style="margin-top:1rem">Our licensed and experienced team brings the same level of dedication to a small repair as to a large-scale development.</p>
-    </div>
-  </div>
-  <div class="services-grid fade-in">
-    <div class="service-card">
-      <span class="service-num">01</span>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="2" y="7" width="20" height="15" rx="1"/><polyline points="17 2 12 7 7 2"/>
-      </svg>
-      <h3>New Construction</h3>
-      <p>Ground-up residential and commercial builds, managed end-to-end with meticulous attention to timelines and budget.</p>
-    </div>
-    <div class="service-card">
-      <span class="service-num">02</span>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M3 21h18M9 8h1m5 0h1M4 21V8a1 1 0 011-1h3a1 1 0 011 1v13M15 21V8a1 1 0 011-1h3a1 1 0 011 1v13"/><path d="M9 21v-4a1 1 0 011-1h4a1 1 0 011 1v4"/>
-      </svg>
-      <h3>Renovation & Fit-Out</h3>
-      <p>Full-scale renovations that breathe new life into existing spaces, from kitchens and baths to entire floor plates.</p>
-    </div>
-    <div class="service-card">
-      <span class="service-num">03</span>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
-      </svg>
-      <h3>Preventive Maintenance</h3>
-      <p>Scheduled maintenance programs to keep commercial and residential properties in optimal condition year-round.</p>
-    </div>
-    <div class="service-card">
-      <span class="service-num">04</span>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/>
-        <path d="M15.54 8.46a5 5 0 010 7.07M8.46 8.46a5 5 0 000 7.07"/>
-      </svg>
-      <h3>Electrical & Plumbing</h3>
-      <p>Certified electrical and plumbing work for new builds, upgrades, and emergency repairs across all property types.</p>
-    </div>
-    <div class="service-card">
-      <span class="service-num">05</span>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
-      <h3>Roofing & Exterior</h3>
-      <p>Roof installations, repairs, cladding, rendering, and exterior finishing that protects and enhances your property.</p>
-    </div>
-    <div class="service-card">
-      <span class="service-num">06</span>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
-      <h3>Emergency Repairs</h3>
-      <p>Rapid response for urgent property issues — water damage, structural concerns, and critical system failures.</p>
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="reveal">
+        <div class="section-eye"><div class="section-eye-line"></div><span class="section-eye-text">Who We Are</span></div>
+        <h2 class="section-heading">Built on <em>trust</em>,<br>delivered with precision.</h2>
+        <p class="section-sub" style="margin-bottom:1.5rem">Lunar Construction & Facilities is a residential construction and property maintenance company dedicated to transforming spaces with uncompromising quality and care.</p>
+        <p class="section-sub" style="margin-bottom:2rem">From new builds and renovations to ongoing property maintenance, our experienced team brings the same level of commitment to every project — no matter the size.</p>
+        <a href="#services" class="btn-outline">Our Services</a>
+      </div>
+      <div class="about-img reveal">
+        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80" alt="Lunar construction project">
+        <div class="about-img-accent"><p>10+ Years of Excellence</p></div>
+      </div>
     </div>
   </div>
 </section>
 
-<hr class="divider">
-
-<!-- ABOUT -->
-<div class="about-wrap" id="about">
-  <div class="about-inner">
-    <div class="about-visual">
-      <div class="about-pattern"></div>
-      <div class="about-logo-display">
-        <img src="lunar-logo-transparent.png" alt="Lunar Construction Logo">
-      </div>
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-eye"><div class="section-eye-line"></div><span class="section-eye-text">What We Do</span></div>
+      <h2 class="section-heading">Our Core <em>Services</em></h2>
     </div>
-    <div class="about-content">
-      <div class="section-label">About Lunar</div>
-      <h2 class="section-title">Built on Trust,<br>Driven by <em>Craftsmanship</em></h2>
-      <p>Lunar Construction & Property Maintenance was founded with a simple mission: to deliver construction and maintenance services of the highest standard, every time. Our team of licensed professionals brings decades of combined experience to every project.</p>
-      <p>We work with homeowners, commercial landlords, property managers, and developers — providing the same quality and accountability regardless of project size.</p>
-      <div class="about-pillars fade-in">
-        <div class="pillar">
-          <div>
-            <div class="pillar-title">Licensed & Insured</div>
-            <div class="pillar-desc">Fully certified team, compliant with all local regulations</div>
-          </div>
-        </div>
-        <div class="pillar">
-          <div>
-            <div class="pillar-title">Transparent Pricing</div>
-            <div class="pillar-desc">Detailed quotes with no hidden fees or surprise costs</div>
-          </div>
-        </div>
-        <div class="pillar">
-          <div>
-            <div class="pillar-title">On-Time Delivery</div>
-            <div class="pillar-desc">We respect your schedule and honour our commitments</div>
-          </div>
-        </div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-icon">🏠</div>
+        <h3>Residential Construction</h3>
+        <p>New builds, extensions, and full home construction from foundation to finish. Every detail crafted to the highest standard.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🔧</div>
+        <h3>Property Maintenance</h3>
+        <p>Proactive and reactive property maintenance services to keep your home or portfolio in peak condition year-round.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🏢</div>
+        <h3>Facilities Management</h3>
+        <p>Comprehensive facilities management solutions — planned maintenance, compliance, and day-to-day operational support.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">📋</div>
+        <h3>Project Coordination</h3>
+        <p>End-to-end project management ensuring your build stays on time, on budget, and aligned with your vision.</p>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- WHY US -->
-<section id="why-us">
-  <div class="section-label">Why Choose Lunar</div>
-  <h2 class="section-title">The Lunar <em>Difference</em></h2>
-  <div class="why-grid fade-in">
-    <div class="why-card">
-      <svg class="why-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
-      <h3>Quality Assured</h3>
-      <p>Every project undergoes rigorous quality checks at each phase, ensuring results that last and exceed expectations.</p>
-    </div>
-    <div class="why-card">
-      <svg class="why-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-      </svg>
-      <h3>Rapid Response</h3>
-      <p>From initial inquiry to boots on the ground, Lunar moves fast without compromising quality or safety.</p>
-    </div>
-    <div class="why-card">
-      <svg class="why-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-      </svg>
-      <h3>Dedicated Teams</h3>
-      <p>Assigned project managers and specialist crews who know your property and deliver consistent results.</p>
-    </div>
-    <div class="why-card">
-      <svg class="why-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-      </svg>
-      <h3>Competitive Rates</h3>
-      <p>Premium workmanship at fair, market-competitive pricing. Detailed quotes before any work begins.</p>
+<!-- STATS -->
+<section id="stats" style="padding:0">
+  <div class="container" style="padding:0;max-width:100%">
+    <div class="stats-grid">
+      <div class="stat-item reveal"><div class="stat-num">500+</div><div class="stat-label">Projects Completed</div></div>
+      <div class="stat-item reveal"><div class="stat-num">10+</div><div class="stat-label">Years Experience</div></div>
+      <div class="stat-item reveal"><div class="stat-num">100+</div><div class="stat-label">Happy Homeowners</div></div>
+      <div class="stat-item reveal"><div class="stat-num">98%</div><div class="stat-label">Client Satisfaction</div></div>
     </div>
   </div>
 </section>
 
 <!-- PROJECTS -->
-<div class="projects-section" id="projects">
-  <div class="projects-header">
-    <div>
-      <div class="section-label">Our Work</div>
-      <h2 class="section-title">Featured <em>Projects</em></h2>
-    </div>
-    <a href="#contact" class="btn-ghost" style="flex-shrink:0">
-      Discuss Your Project
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-        <polyline points="12 5 19 12 12 19"></polyline>
-      </svg>
-    </a>
-  </div>
-  <div class="projects-grid fade-in">
-    <div class="project-card">
-      <div class="project-bg">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5">
-          <rect x="2" y="7" width="20" height="15" rx="1"/><polyline points="17 2 12 7 7 2"/>
-        </svg>
+<section id="projects">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem">
+      <div class="reveal">
+        <div class="section-eye"><div class="section-eye-line"></div><span class="section-eye-text">Our Work</span></div>
+        <h2 class="section-heading">Featured <em>Projects</em></h2>
       </div>
-      <div class="project-info">
-        <div class="project-type">Residential</div>
-        <div class="project-name">Meadowbrook Estate</div>
-        <div class="project-detail">Custom 4-bed new build · Completed 2024</div>
-      </div>
+      <a href="#contact" class="btn-outline reveal" style="margin-bottom:.5rem">View All Work →</a>
     </div>
-    <div class="project-card">
-      <div class="project-bg">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5">
-          <path d="M3 21h18M9 8h1m5 0h1M4 21V8a1 1 0 011-1h3a1 1 0 011 1v13M15 21V8a1 1 0 011-1h3a1 1 0 011 1v13"/>
-        </svg>
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=900&q=80" alt="Residential build">
+        <div class="project-info"><div class="project-cat">Residential</div><div class="project-title">Modern Family Home</div></div>
+        <div class="project-overlay"><span class="project-label">View Project →</span></div>
       </div>
-      <div class="project-info">
-        <div class="project-type">Commercial</div>
-        <div class="project-name">Harrington Office Fit-Out</div>
-        <div class="project-detail">12,000 sq ft open-plan renovation · 2023</div>
+      <div class="project-card reveal">
+        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=80" alt="Property renovation">
+        <div class="project-info"><div class="project-cat">Renovation</div><div class="project-title">Victorian Terrace Refurb</div></div>
+        <div class="project-overlay"><span class="project-label">View Project →</span></div>
       </div>
-    </div>
-    <div class="project-card">
-      <div class="project-bg">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5">
-          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-        </svg>
+      <div class="project-card reveal">
+        <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=700&q=80" alt="New build">
+        <div class="project-info"><div class="project-cat">New Build</div><div class="project-title">Luxury Detached Home</div></div>
+        <div class="project-overlay"><span class="project-label">View Project →</span></div>
       </div>
-      <div class="project-info">
-        <div class="project-type">Property Maintenance</div>
-        <div class="project-name">Riverside Apartment Complex</div>
-        <div class="project-detail">Ongoing maintenance contract · 48 units</div>
+      <div class="project-card reveal">
+        <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=80" alt="Facilities">
+        <div class="project-info"><div class="project-cat">Facilities</div><div class="project-title">Commercial Property Management</div></div>
+        <div class="project-overlay"><span class="project-label">View Project →</span></div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- TESTIMONIALS -->
-<section>
-  <div class="section-label">Client Feedback</div>
-  <h2 class="section-title">What Our Clients <em>Say</em></h2>
-  <div class="testimonials-grid fade-in">
-    <div class="testimonial">
-      <div class="stars">★★★★★</div>
-      <p>Lunar managed our full renovation from start to finish. The workmanship was exceptional and the team was professional throughout. Highly recommend for any large-scale project.</p>
-      <div class="testimonial-author">James R. — Property Developer</div>
-    </div>
-    <div class="testimonial">
-      <div class="stars">★★★★★</div>
-      <p>As a commercial landlord, having a reliable maintenance partner is everything. Lunar's response times and quality of work keep our tenants happy and our properties in top shape.</p>
-      <div class="testimonial-author">Sarah M. — Commercial Landlord</div>
-    </div>
-    <div class="testimonial">
-      <div class="stars">★★★★★</div>
-      <p>They built our family home to an incredible standard. Every detail was considered, and they were transparent about costs every step of the way. We couldn't be happier.</p>
-      <div class="testimonial-author">David & Claire T. — Homeowners</div>
     </div>
   </div>
 </section>
 
-<hr class="divider">
-
-<!-- CONTACT -->
-<div class="contact-wrap" id="contact">
-  <div class="contact-inner">
-    <div class="contact-info">
-      <div class="section-label">Get In Touch</div>
-      <h2 class="section-title">Start Your<br><em>Project Today</em></h2>
-      <p style="color:var(--gray);line-height:1.8;margin-top:1rem;font-size:0.95rem">Whether you have a clear brief or just an idea, our team is ready to help. Get in touch and we'll respond within 24 hours.</p>
-      <div class="contact-details">
-        <div class="contact-item">
-          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14v2.92z"/>
-          </svg>
-          <div>
-            <div class="contact-item-label">Phone</div>
-            <div class="contact-item-value">508-387-9219</div>
+<!-- CAREERS -->
+<section id="careers">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;flex-wrap:wrap">
+      <div class="reveal">
+        <div class="section-eye"><div class="section-eye-line"></div><span class="section-eye-text">Join Us</span></div>
+        <h2 class="section-heading">Join the<br><em>Lunar Team</em></h2>
+        <p class="section-sub">We're always looking for skilled, passionate people to grow with us. From site managers to coordinators — if you're driven, there's a place for you at Lunar.</p>
+      </div>
+      <div>
+        <div class="jobs-list">
+          <div class="job-card reveal">
+            <div><div class="job-title">Site Manager</div><div class="job-meta"><span>Full Time</span><span>On Site</span></div></div>
+            <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+              <span class="job-tag">Construction</span>
+              <a href="#apply-form" class="btn-gold" style="font-size:12px;padding:.5rem 1.25rem">Apply Now</a>
+            </div>
           </div>
-        </div>
-        <div class="contact-item">
-          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
-          <div>
-            <div class="contact-item-label">Email</div>
-            <div class="contact-item-value">Service@sandsuniversal.com</div>
+          <div class="job-card reveal">
+            <div><div class="job-title">Maintenance Technician</div><div class="job-meta"><span>Full Time</span><span>Field Based</span></div></div>
+            <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+              <span class="job-tag">Maintenance</span>
+              <a href="#apply-form" class="btn-gold" style="font-size:12px;padding:.5rem 1.25rem">Apply Now</a>
+            </div>
           </div>
-        </div>
-        <div class="contact-item">
-          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          <div>
-            <div class="contact-item-label">Location</div>
-            <div class="contact-item-value">Framingham, MA</div>
-          </div>
-        </div>
-        <div class="contact-item">
-          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
-          <div>
-            <div class="contact-item-label">Hours</div>
-            <div class="contact-item-value">Mon–Fri: 7:00am – 6:00pm<br>Sat: 8:00am – 2:00pm</div>
+          <div class="job-card reveal">
+            <div><div class="job-title">Project Coordinator</div><div class="job-meta"><span>Full Time</span><span>Hybrid</span></div></div>
+            <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+              <span class="job-tag">Management</span>
+              <a href="#apply-form" class="btn-gold" style="font-size:12px;padding:.5rem 1.25rem">Apply Now</a>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="contact-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label>First Name</label>
-          <input type="text" placeholder="John">
+
+    <div id="apply-form" class="form-section reveal" style="margin-top:4rem">
+      <div class="section-eye" style="margin-bottom:1.5rem"><div class="section-eye-line"></div><span class="section-eye-text">Application Form</span></div>
+      <div class="form-grid">
+        <div class="form-field"><label>Full Name</label><input type="text" placeholder="Your full name"></div>
+        <div class="form-field"><label>Email</label><input type="email" placeholder="your@email.com"></div>
+        <div class="form-field"><label>Phone</label><input type="tel" placeholder="+44 000 000 0000"></div>
+        <div class="form-field"><label>Position Applying For</label>
+          <select><option>Site Manager</option><option>Maintenance Technician</option><option>Project Coordinator</option><option>Other</option></select>
         </div>
-        <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" placeholder="Smith">
+        <div class="form-field full"><label>Upload CV</label>
+          <div class="file-upload"><p>Drag & drop or <span>click to browse</span></p></div>
         </div>
+        <div class="form-field full" style="margin-top:.5rem"><button class="btn-gold" style="width:fit-content">Submit Application</button></div>
       </div>
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" placeholder="john@example.com">
-      </div>
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="tel" placeholder="+1 (555) 000-0000">
-      </div>
-      <div class="form-group">
-        <label>Service Required</label>
-        <select>
-          <option value="" disabled selected>Select a service...</option>
-          <option>New Construction</option>
-          <option>Renovation & Fit-Out</option>
-          <option>Property Maintenance Contract</option>
-          <option>Roofing & Exterior</option>
-          <option>Electrical & Plumbing</option>
-          <option>Emergency Repair</option>
-          <option>Other / General Enquiry</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Project Details</label>
-        <textarea rows="4" placeholder="Tell us about your project, timeline, and any specific requirements..."></textarea>
-      </div>
-      <button class="submit-btn" onclick="handleSubmit(this)">
-        Send Enquiry
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </button>
     </div>
   </div>
-</div>
+</section>
+
+<!-- SUBCONTRACTORS -->
+<section id="subcontractors">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-eye"><div class="section-eye-line"></div><span class="section-eye-text">Partner With Us</span></div>
+      <h2 class="section-heading">Trusted <em>Subcontractors</em><br>Welcome</h2>
+      <p class="section-sub">Lunar works with a vetted network of subcontractors across residential and facilities projects. We value long-term partnerships built on reliability, quality, and mutual respect.</p>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-card reveal">
+        <div class="trust-icon">💰</div>
+        <h4>Reliable Payments</h4>
+        <p>Prompt, fair payment on every job — no chasing invoices, no delays.</p>
+      </div>
+      <div class="trust-card reveal">
+        <div class="trust-icon">🤝</div>
+        <h4>Long-Term Partnerships</h4>
+        <p>We build lasting relationships with our subcontractors and bring them back on future projects.</p>
+      </div>
+      <div class="trust-card reveal">
+        <div class="trust-icon">⭐</div>
+        <h4>Quality Standards</h4>
+        <p>We maintain high standards across all our projects — and support our partners in doing the same.</p>
+      </div>
+    </div>
+
+    <div class="form-section reveal">
+      <div class="section-eye" style="margin-bottom:1.5rem"><div class="section-eye-line"></div><span class="section-eye-text">Register Your Interest</span></div>
+      <div class="form-grid">
+        <div class="form-field"><label>Company Name</label><input type="text" placeholder="Your company name"></div>
+        <div class="form-field"><label>Contact Name</label><input type="text" placeholder="Your name"></div>
+        <div class="form-field"><label>Email</label><input type="email" placeholder="your@email.com"></div>
+        <div class="form-field"><label>Phone</label><input type="tel" placeholder="+44 000 000 0000"></div>
+        <div class="form-field"><label>Trade / Specialty</label><input type="text" placeholder="e.g. Electrical, Plumbing, Groundworks"></div>
+        <div class="form-field"><label>Years of Experience</label><input type="number" placeholder="5"></div>
+        <div class="form-field full"><label>Upload Documents (Insurance, Certs)</label>
+          <div class="file-upload"><p>Drag & drop or <span>click to browse</span></p></div>
+        </div>
+        <div class="form-field full"><button class="btn-gold" style="width:fit-content">Submit Registration</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="marquee-wrap">
+      <div class="marquee-track">
+        <span>BUILDING EXCELLENCE •</span><span>LUNAR CONSTRUCTION •</span><span>RESIDENTIAL & FACILITIES •</span>
+        <span>BUILDING EXCELLENCE •</span><span>LUNAR CONSTRUCTION •</span><span>RESIDENTIAL & FACILITIES •</span>
+        <span>BUILDING EXCELLENCE •</span><span>LUNAR CONSTRUCTION •</span><span>RESIDENTIAL & FACILITIES •</span>
+      </div>
+    </div>
+    <div class="contact-grid" style="margin-top:3rem">
+      <div class="reveal">
+        <div class="section-eye"><div class="section-eye-line"></div><span class="section-eye-text">Contact</span></div>
+        <h3 style="font-family:var(--font-display);font-size:2rem;font-weight:300;color:var(--white);margin-bottom:2rem">Let's build<br><em style="color:var(--gold-light)">something great.</em></h3>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📞</div>
+          <div><strong>Phone</strong><p>+44 (0) 123 456 7890</p></div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">✉️</div>
+          <div><strong>Email</strong><p>info@lunarconstruction.co.uk</p></div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📍</div>
+          <div><strong>Location</strong><p>United Kingdom</p></div>
+        </div>
+      </div>
+      <div class="form-section reveal" style="margin-top:0">
+        <div class="form-grid">
+          <div class="form-field"><label>Name</label><input type="text" placeholder="Your name"></div>
+          <div class="form-field"><label>Email</label><input type="email" placeholder="your@email.com"></div>
+          <div class="form-field"><label>Phone</label><input type="tel" placeholder="+44 000 000 0000"></div>
+          <div class="form-field"><label>Service Needed</label>
+            <select><option>Residential Construction</option><option>Property Maintenance</option><option>Facilities Management</option><option>Project Coordination</option><option>Other</option></select>
+          </div>
+          <div class="form-field full"><label>Message</label><textarea placeholder="Tell us about your project..."></textarea></div>
+          <div class="form-field full"><button class="btn-gold" style="width:fit-content">Send Message ↗</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">
-    <img src="lunar-logo-transparent.png" alt="Lunar Construction" style="height:60px">
+  <div class="footer-inner">
+    <div class="footer-logo">Lunar Construction & Facilities</div>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#projects">Projects</a>
+      <a href="#careers">Careers</a>
+      <a href="#subcontractors">Subcontractors</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-copy">© 2025 Lunar Construction & Facilities. All rights reserved.</div>
   </div>
-  <div class="footer-links">
-    <a href="#about">About</a>
-    <a href="#services">Services</a>
-    <a href="#projects">Projects</a>
-    <a href="#contact">Contact</a>
-  </div>
-  <div class="footer-copy">&copy; 2025 Lunar Construction & Property Maintenance. All rights reserved.</div>
 </footer>
 
 <script>
-  // Scroll progress
-  window.addEventListener('scroll', () => {
-    const scrollTop = window.scrollY;
-    const docHeight = document.body.scrollHeight - window.innerHeight;
-    const progress = (scrollTop / docHeight) * 100;
-    document.getElementById('progressBar').style.width = progress + '%';
+// LOADER
+const words = ['w0','w1','w2'];
+let wi = 0, count = 0;
+const counterEl = document.getElementById('counter');
+const barEl = document.getElementById('loaderBar');
+const loader = document.getElementById('loader');
+
+const wordInterval = setInterval(() => {
+  document.getElementById(words[wi]).classList.remove('active');
+  document.getElementById(words[wi]).classList.add('exit');
+  wi = (wi + 1) % words.length;
+  const next = document.getElementById(words[wi]);
+  next.classList.remove('exit');
+  next.classList.add('active');
+}, 900);
+
+const start = performance.now();
+const duration = 2700;
+function tick(now) {
+  const elapsed = now - start;
+  count = Math.min(100, Math.round((elapsed / duration) * 100));
+  counterEl.textContent = String(count).padStart(3, '0');
+  barEl.style.width = count + '%';
+  if (count < 100) {
+    requestAnimationFrame(tick);
+  } else {
+    clearInterval(wordInterval);
+    setTimeout(() => { loader.classList.add('hidden'); }, 400);
+  }
+}
+requestAnimationFrame(tick);
+
+// NAV SCROLL
+const navPill = document.getElementById('navPill');
+window.addEventListener('scroll', () => {
+  navPill.classList.toggle('scrolled', window.scrollY > 80);
+  document.querySelectorAll('.nav-link').forEach(l => {
+    const target = document.querySelector(l.getAttribute('href'));
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    l.classList.toggle('active', rect.top <= 100 && rect.bottom > 100);
   });
+});
 
-  // Intersection observer for fade-in
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-  // Nav scroll effect
-  window.addEventListener('scroll', () => {
-    const nav = document.getElementById('navbar');
-    if (window.scrollY > 60) {
-      nav.style.padding = '0.8rem 4rem';
-    } else {
-      nav.style.padding = '1.2rem 4rem';
+// REVEAL ON SCROLL
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      observer.unobserve(e.target);
     }
   });
-
-  // Submit handler
-  function handleSubmit(btn) {
-    btn.textContent = '✓ Message Sent!';
-    btn.style.background = '#4a7c4e';
-    btn.style.color = '#fff';
-    setTimeout(() => {
-      btn.innerHTML = 'Send Enquiry <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
-      btn.style.background = '';
-      btn.style.color = '';
-    }, 3000);
-  }
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
